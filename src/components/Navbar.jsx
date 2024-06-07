@@ -9,12 +9,19 @@ function NavigationBar() {
 	return (
 		<Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
 			<Container>
-				<Navbar.Brand href="#home">Lib App</Navbar.Brand>
+				<Navbar.Brand>
+					<NavLink to="/">Lib App</NavLink>
+				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 				<Navbar.Collapse id="responsive-navbar-nav">
 					<Nav className="me-auto">
-						<Nav.Link href="#features">Features</Nav.Link>
-						<Nav.Link href="#pricing">Pricing</Nav.Link>
+						<Nav.Link
+							href="#features"
+							style={{ display: 'hidden' }}
+						>
+							Features
+						</Nav.Link>
+						{/* <Nav.Link href="#pricing">Pricing</Nav.Link>
 						<NavDropdown
 							title="Dropdown"
 							id="collapsible-nav-dropdown"
@@ -32,11 +39,11 @@ function NavigationBar() {
 							<NavDropdown.Item href="#action/3.4">
 								Separated link
 							</NavDropdown.Item>
-						</NavDropdown>
+						</NavDropdown> */}
 					</Nav>
 					<Nav>
 						<Nav.Item>
-							<NavLink to="/add-catalogue">
+							<NavLink to="/add-catalogue" className="">
 								<Button>Add catalogue</Button>
 							</NavLink>
 						</Nav.Item>

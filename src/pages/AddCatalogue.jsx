@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import NavigationBar from '../components/Navbar';
+import { useEffect, useState } from 'react';
+import { BASE_URL } from '../utils';
 
 const schema = z.object({
 	name: z
@@ -37,9 +39,26 @@ const schema = z.object({
 			required_error: 'Date published is required',
 		})
 		.min(1, { message: 'Date published is required' }),
+	booking_fee: z.string().min(1, { message: 'Booking fee is required' }),
 });
 
 const AddCatalogue = () => {
+	const [genres, setGenres] = useState([]);
+
+	useEffect(() => {
+		fetch(`${BASE_URL}/genres`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				setGenres(data);
+			})
+			.catch((err) => console.log(err));
+	}, []);
+
 	const { control, handleSubmit, formState } = useForm({
 		resolver: zodResolver(schema),
 		defaultValues: {
@@ -49,11 +68,25 @@ const AddCatalogue = () => {
 			author: '',
 			genre_id: '',
 			date_published: '',
+			booking_fee: '',
 		},
 	});
 
-	const onSubmit = (values) => {
-		console.log(values);
+	const onSubmit = async (values) => {
+		await fetch(`${BASE_URL}/catalogue`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				...values,
+				booking_fee: Number(values.booking_fee),
+				genre_id: Number(values.genre_id),
+			}),
+		})
+			.then((res) => res.json())
+			.then((data) => console.log(data))
+			.catch((err) => console.log(err));
 	};
 
 	return (
@@ -146,6 +179,27 @@ const AddCatalogue = () => {
 				/>
 
 				<Controller
+					name="booking_fee"
+					control={control}
+					render={({ field, fieldState }) => (
+						<Form.Group className="mb-3">
+							<Form.Label>Booking Fee</Form.Label>
+							<Form.Control
+								type="number"
+								placeholder="Booking Fee"
+								{...field}
+							/>
+
+							{fieldState.invalid && (
+								<Form.Text className="text-danger">
+									{fieldState.error.message}
+								</Form.Text>
+							)}
+						</Form.Group>
+					)}
+				/>
+
+				<Controller
 					name="genre_id"
 					control={control}
 					render={({ field, fieldState }) => (
@@ -157,9 +211,11 @@ const AddCatalogue = () => {
 								{...field}
 							>
 								<option>Select genre</option>
-								<option value="1">One</option>
-								<option value="2">Two</option>
-								<option value="3">Three</option>
+								{genres.map((genre) => (
+									<option key={genre.id} value={genre.id}>
+										{genre.name}
+									</option>
+								))}
 							</Form.Select>
 
 							{fieldState.invalid && (
@@ -192,8 +248,12 @@ const AddCatalogue = () => {
 					)}
 				/>
 
-				<Button variant="primary" type="submit">
-					Submit
+				<Button
+					variant="primary"
+					type="submit"
+					disabled={formState.isSubmitting}
+				>
+					{formState.isSubmitting ? 'Saving...' : 'Submit'}
 				</Button>
 			</Form>
 		</Container>
