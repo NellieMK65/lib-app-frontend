@@ -1,19 +1,23 @@
 import { Card, Button } from 'react-bootstrap';
+import BookCatalogue from './BookCatalogue';
 
-function CatalogueCard() {
+function CatalogueCard(props) {
+	const { name, id, author, image, booking_fee, is_booked } = props;
+
 	return (
 		<Card style={{ width: '18rem' }}>
-			<Card.Img
-				variant="top"
-				src="https://m.media-amazon.com/images/I/61zClQH6aRL._AC_UF1000,1000_QL80_.jpg"
-			/>
+			<Card.Img variant="top" src={image} height={400} />
 			<Card.Body>
-				<Card.Title>Card Title</Card.Title>
-				<Card.Text>
-					Some quick example text to build on the card title and make
-					up the bulk of the card's content.
-				</Card.Text>
-				<Button variant="primary">Go somewhere</Button>
+				<Card.Title>{name}</Card.Title>
+				<Card.Text>Author: {author}</Card.Text>
+				<Button variant="primary">View</Button>
+
+				<BookCatalogue
+					id={id}
+					name={name}
+					bookingFee={booking_fee}
+					isBooked={is_booked}
+				/>
 			</Card.Body>
 		</Card>
 	);
